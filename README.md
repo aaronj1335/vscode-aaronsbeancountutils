@@ -13,3 +13,13 @@ Utilities for balancing a Beancount ledger:
     It will also copy the `3000` to the clipboard.
     
     It is smart enough to ignore the leading comment.
+
+## Developing
+
+The `src/calculator.js` module is created from the `src/calculator.jison` grammar by the venerable [Jison](https://github.com/zaach/jison):
+
+    npm run compile:calculator
+
+The `calculator.jison` is tweaked from the one in Jison's examples directory.
+
+Otherwise this extension is lifted pretty directly from [the VSCode extension Getting Started doc](https://code.visualstudio.com/api/get-started/your-first-extension).
