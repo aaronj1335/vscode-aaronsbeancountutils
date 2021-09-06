@@ -43,29 +43,19 @@ expressions
 
 e
     : e '+' e
-        {$$ = $1+$3;}
+        {$$ = $1.plus($3);}
     | e '-' e
-        {$$ = $1-$3;}
+        {$$ = $1.minus($3);}
     | e '*' e
-        {$$ = $1*$3;}
+        {$$ = $1.times($3);}
     | e '/' e
-        {$$ = $1/$3;}
+        {$$ = $1.dividedBy($3);}
     | e '^' e
-        {$$ = Math.pow($1, $3);}
-    | e '!'
-        {{
-          $$ = (function fact (n) { return n==0 ? 1 : fact(n-1) * n })($1);
-        }}
-    | e '%'
-        {$$ = $1/100;}
+        {$$ = $1.toPower($3);}
     | '-' e %prec UMINUS
-        {$$ = -$2;}
+        {$$ = $2.negated();}
     | '(' e ')'
         {$$ = $2;}
     | NUMBER
-        {$$ = Number(yytext);}
-    | E
-        {$$ = Math.E;}
-    | PI
-        {$$ = Math.PI;}
+        {$$ = new Decimal(yytext);}
     ;

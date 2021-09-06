@@ -71,13 +71,14 @@
     recoverable: (boolean: TRUE when the parser has a error recovery rule available for this particular error)
   }
 */
+var Decimal = require('decimal.js');
 var calculator = (function(){
-var o=function(k,v,o,l){for(o=o||{},l=k.length;l--;o[k[l]]=v);return o},$V0=[1,3],$V1=[1,4],$V2=[1,5],$V3=[1,6],$V4=[1,7],$V5=[1,9],$V6=[1,10],$V7=[1,11],$V8=[1,12],$V9=[1,13],$Va=[1,14],$Vb=[1,15],$Vc=[5,6,7,8,9,10,11,12,14],$Vd=[5,6,7,14],$Ve=[5,6,7,8,9,14];
+var o=function(k,v,o,l){for(o=o||{},l=k.length;l--;o[k[l]]=v);return o},$V0=[1,3],$V1=[1,4],$V2=[1,5],$V3=[1,7],$V4=[1,8],$V5=[1,9],$V6=[1,10],$V7=[1,11],$V8=[5,6,7,8,9,10,12],$V9=[5,6,7,12],$Va=[5,6,7,8,9,12];
 var parser = {trace: function trace () { },
 yy: {},
-symbols_: {"error":2,"expressions":3,"e":4,"EOF":5,"+":6,"-":7,"*":8,"/":9,"^":10,"!":11,"%":12,"(":13,")":14,"NUMBER":15,"E":16,"PI":17,"$accept":0,"$end":1},
-terminals_: {2:"error",5:"EOF",6:"+",7:"-",8:"*",9:"/",10:"^",11:"!",12:"%",13:"(",14:")",15:"NUMBER",16:"E",17:"PI"},
-productions_: [0,[3,2],[4,3],[4,3],[4,3],[4,3],[4,3],[4,2],[4,2],[4,2],[4,3],[4,1],[4,1],[4,1]],
+symbols_: {"error":2,"expressions":3,"e":4,"EOF":5,"+":6,"-":7,"*":8,"/":9,"^":10,"(":11,")":12,"NUMBER":13,"$accept":0,"$end":1},
+terminals_: {2:"error",5:"EOF",6:"+",7:"-",8:"*",9:"/",10:"^",11:"(",12:")",13:"NUMBER"},
+productions_: [0,[3,2],[4,3],[4,3],[4,3],[4,3],[4,3],[4,2],[4,3],[4,1]],
 performAction: function anonymous(yytext, yyleng, yylineno, yy, yystate /* action[1] */, $$ /* vstack */, _$ /* lstack */) {
 /* this == yyval */
 
@@ -88,47 +89,33 @@ case 1:
           return $$[$0-1]; 
 break;
 case 2:
-this.$ = $$[$0-2]+$$[$0];
+this.$ = $$[$0-2].plus($$[$0]);
 break;
 case 3:
-this.$ = $$[$0-2]-$$[$0];
+this.$ = $$[$0-2].minus($$[$0]);
 break;
 case 4:
-this.$ = $$[$0-2]*$$[$0];
+this.$ = $$[$0-2].times($$[$0]);
 break;
 case 5:
-this.$ = $$[$0-2]/$$[$0];
+this.$ = $$[$0-2].dividedBy($$[$0]);
 break;
 case 6:
-this.$ = Math.pow($$[$0-2], $$[$0]);
+this.$ = $$[$0-2].toPower($$[$0]);
 break;
 case 7:
-
-          this.$ = (function fact (n) { return n==0 ? 1 : fact(n-1) * n })($$[$0-1]);
-        
+this.$ = $$[$0].negated();
 break;
 case 8:
-this.$ = $$[$0-1]/100;
-break;
-case 9:
-this.$ = -$$[$0];
-break;
-case 10:
 this.$ = $$[$0-1];
 break;
-case 11:
-this.$ = Number(yytext);
-break;
-case 12:
-this.$ = Math.E;
-break;
-case 13:
-this.$ = Math.PI;
+case 9:
+this.$ = new Decimal(yytext);
 break;
 }
 },
-table: [{3:1,4:2,7:$V0,13:$V1,15:$V2,16:$V3,17:$V4},{1:[3]},{5:[1,8],6:$V5,7:$V6,8:$V7,9:$V8,10:$V9,11:$Va,12:$Vb},{4:16,7:$V0,13:$V1,15:$V2,16:$V3,17:$V4},{4:17,7:$V0,13:$V1,15:$V2,16:$V3,17:$V4},o($Vc,[2,11]),o($Vc,[2,12]),o($Vc,[2,13]),{1:[2,1]},{4:18,7:$V0,13:$V1,15:$V2,16:$V3,17:$V4},{4:19,7:$V0,13:$V1,15:$V2,16:$V3,17:$V4},{4:20,7:$V0,13:$V1,15:$V2,16:$V3,17:$V4},{4:21,7:$V0,13:$V1,15:$V2,16:$V3,17:$V4},{4:22,7:$V0,13:$V1,15:$V2,16:$V3,17:$V4},o($Vc,[2,7]),o($Vc,[2,8]),o($Vc,[2,9]),{6:$V5,7:$V6,8:$V7,9:$V8,10:$V9,11:$Va,12:$Vb,14:[1,23]},o($Vd,[2,2],{8:$V7,9:$V8,10:$V9,11:$Va,12:$Vb}),o($Vd,[2,3],{8:$V7,9:$V8,10:$V9,11:$Va,12:$Vb}),o($Ve,[2,4],{10:$V9,11:$Va,12:$Vb}),o($Ve,[2,5],{10:$V9,11:$Va,12:$Vb}),o([5,6,7,8,9,10,14],[2,6],{11:$Va,12:$Vb}),o($Vc,[2,10])],
-defaultActions: {8:[2,1]},
+table: [{3:1,4:2,7:$V0,11:$V1,13:$V2},{1:[3]},{5:[1,6],6:$V3,7:$V4,8:$V5,9:$V6,10:$V7},{4:12,7:$V0,11:$V1,13:$V2},{4:13,7:$V0,11:$V1,13:$V2},o($V8,[2,9]),{1:[2,1]},{4:14,7:$V0,11:$V1,13:$V2},{4:15,7:$V0,11:$V1,13:$V2},{4:16,7:$V0,11:$V1,13:$V2},{4:17,7:$V0,11:$V1,13:$V2},{4:18,7:$V0,11:$V1,13:$V2},o($V8,[2,7]),{6:$V3,7:$V4,8:$V5,9:$V6,10:$V7,12:[1,19]},o($V9,[2,2],{8:$V5,9:$V6,10:$V7}),o($V9,[2,3],{8:$V5,9:$V6,10:$V7}),o($Va,[2,4],{10:$V7}),o($Va,[2,5],{10:$V7}),o($V8,[2,6]),o($V8,[2,8])],
+defaultActions: {6:[2,1]},
 parseError: function parseError (str, hash) {
     if (hash.recoverable) {
         this.trace(str);
@@ -605,7 +592,7 @@ var YYSTATE=YY_START;
 switch($avoiding_name_collisions) {
 case 0:/* skip whitespace */
 break;
-case 1:return 15
+case 1:return 13
 break;
 case 2:return 8
 break;
@@ -617,17 +604,17 @@ case 5:return 6
 break;
 case 6:return 10
 break;
-case 7:return 11
+case 7:return '!'
 break;
-case 8:return 12
+case 8:return '%'
 break;
-case 9:return 13
+case 9:return 11
 break;
-case 10:return 14
+case 10:return 12
 break;
-case 11:return 17
+case 11:return 'PI'
 break;
-case 12:return 16
+case 12:return 'E'
 break;
 case 13:return 5
 break;
@@ -653,15 +640,15 @@ if (typeof require !== 'undefined' && typeof exports !== 'undefined') {
 exports.parser = calculator;
 exports.Parser = calculator.Parser;
 exports.parse = function () { return calculator.parse.apply(calculator, arguments); };
-exports.main = function commonjsMain (args) {
-    if (!args[1]) {
-        console.log('Usage: '+args[0]+' FILE');
-        process.exit(1);
-    }
-    var source = require('fs').readFileSync(require('path').normalize(args[1]), "utf8");
-    return exports.parser.parse(source);
-};
-if (typeof module !== 'undefined' && require.main === module) {
-  exports.main(process.argv.slice(1));
-}
+// exports.main = function commonjsMain (args) {
+//     if (!args[1]) {
+//         console.log('Usage: '+args[0]+' FILE');
+//         process.exit(1);
+//     }
+//     var source = require('fs').readFileSync(require('path').normalize(args[1]), "utf8");
+//     return exports.parser.parse(source);
+// };
+// // if (typeof module !== 'undefined' && require.main === module) {
+//   exports.main(process.argv.slice(1));
+// }
 }
