@@ -23,6 +23,7 @@
 	},
 	"scripts": {
 		"vscode:prepublish": "npm run compile",
+		"compile:calculator": "node_modules/.bin/jison -o src/calculator.js src/calculator.jison",
 		"compile": "tsc -p ./",
 		"watch": "tsc -watch -p ./",
 		"pretest": "npm run compile && npm run lint",

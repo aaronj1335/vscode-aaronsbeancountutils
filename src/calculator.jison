@@ -1,5 +1,10 @@
 /* description: Parses and executes mathematical expressions. */
 
+%{
+var Decimal = require('decimal.js');
+
+%}
+
 /* lexical grammar */
 %lex
 %%
