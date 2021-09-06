@@ -71,7 +71,6 @@
     recoverable: (boolean: TRUE when the parser has a error recovery rule available for this particular error)
   }
 */
-var Decimal = require('decimal.js');
 var calculator = (function(){
 var o=function(k,v,o,l){for(o=o||{},l=k.length;l--;o[k[l]]=v);return o},$V0=[1,3],$V1=[1,4],$V2=[1,5],$V3=[1,7],$V4=[1,8],$V5=[1,9],$V6=[1,10],$V7=[1,11],$V8=[5,6,7,8,9,10,12],$V9=[5,6,7,12],$Va=[5,6,7,8,9,12];
 var parser = {trace: function trace () { },
@@ -640,15 +639,15 @@ if (typeof require !== 'undefined' && typeof exports !== 'undefined') {
 exports.parser = calculator;
 exports.Parser = calculator.Parser;
 exports.parse = function () { return calculator.parse.apply(calculator, arguments); };
-// exports.main = function commonjsMain (args) {
-//     if (!args[1]) {
-//         console.log('Usage: '+args[0]+' FILE');
-//         process.exit(1);
-//     }
-//     var source = require('fs').readFileSync(require('path').normalize(args[1]), "utf8");
-//     return exports.parser.parse(source);
-// };
-// // if (typeof module !== 'undefined' && require.main === module) {
-//   exports.main(process.argv.slice(1));
-// }
+exports.main = function commonjsMain (args) {
+    if (!args[1]) {
+        console.log('Usage: '+args[0]+' FILE');
+        process.exit(1);
+    }
+    var source = require('fs').readFileSync(require('path').normalize(args[1]), "utf8");
+    return exports.parser.parse(source);
+};
+if (typeof module !== 'undefined' && require.main === module) {
+  exports.main(process.argv.slice(1));
+}
 }
