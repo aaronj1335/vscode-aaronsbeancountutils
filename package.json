@@ -10,14 +10,14 @@
 		"Other"
 	],
 	"activationEvents": [
-		"onCommand:aaronsbeancountutils.helloWorld"
+		"onCommand:aaronsbeancountutils.calc"
 	],
 	"main": "./out/extension.js",
 	"contributes": {
 		"commands": [
 			{
-				"command": "aaronsbeancountutils.helloWorld",
-				"title": "Hello World"
+				"command": "aaronsbeancountutils.calc",
+				"title": "Calculate line and copy result"
 			}
 		]
 	},
