@@ -3,23 +3,33 @@
 	"displayName": "AaronsBeancountUtils",
 	"description": "Utilities for Beancount (i.e. inline calculator)",
 	"version": "0.0.1",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/aaronj1335/vscode-aaronsbeancountutils.git"
+	},
 	"engines": {
 		"vscode": "^1.60.0"
 	},
-	"categories": [
-		"Other"
-	],
+	"main": "./out/extension.js",
+	"publisher": "aaronj1335",
 	"activationEvents": [
 		"onCommand:aaronsbeancountutils.calc"
 	],
-	"main": "./out/extension.js",
 	"contributes": {
 		"commands": [
 			{
 				"command": "aaronsbeancountutils.calc",
 				"title": "Calculate line and copy result"
 			}
-		]
+		],
+		"menus": {
+			"commandPalette": [
+				{
+					"command": "aaronsbeancountutils.calc",
+					"when": "editorLangId == beancount"
+				}
+			]
+		}
 	},
 	"scripts": {
 		"vscode:prepublish": "npm run compile",
@@ -42,6 +52,7 @@
 		"jison": "^0.4.18",
 		"mocha": "^8.4.0",
 		"typescript": "^4.3.2",
+		"vsce": "^1.97.0",
 		"vscode-test": "^1.5.2"
 	},
 	"dependencies": {
