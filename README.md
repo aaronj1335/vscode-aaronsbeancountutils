@@ -23,3 +23,17 @@ The `src/calculator.js` module is created from the `src/calculator.jison` gramma
 The `calculator.jison` is tweaked from the one in Jison's examples directory.
 
 Otherwise this extension is lifted pretty directly from [the VSCode extension Getting Started doc](https://code.visualstudio.com/api/get-started/your-first-extension).
+
+## Publishing
+
+This is published under the [`aaronj1335`](https://dev.azure.com/aaronj1335) Azure organization. You'll need the [personal access token](https://code.visualstudio.com/api/working-with-extensions/publishing-extension#get-a-personal-access-token).
+
+### Prerequisite: login
+
+    node_modules/.bin/vsce login aaronj1335
+
+### Publishing on updates
+
+    npm version minor # or marjo/patch/etc
+    rm -rf out
+    node_modules/.bin/vsce publish
