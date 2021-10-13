@@ -2,7 +2,7 @@
 	"name": "aaronsbeancountutils",
 	"displayName": "AaronsBeancountUtils",
 	"description": "Utilities for Beancount (i.e. inline calculator)",
-	"version": "1.0.0",
+	"version": "1.1.0",
 	"repository": {
 		"type": "git",
 		"url": "https://github.com/aaronj1335/vscode-aaronsbeancountutils.git"
@@ -19,13 +19,21 @@
 		"commands": [
 			{
 				"command": "aaronsbeancountutils.calc",
-				"title": "Calculate line and copy result"
+				"title": "Calculate line and copy result."
+			},
+			{
+				"command": "aaronsbeancountutils.doctor",
+				"title": "Run bean-doctor to get context of transaction at cursor."
 			}
 		],
 		"menus": {
 			"commandPalette": [
 				{
 					"command": "aaronsbeancountutils.calc",
+					"when": "editorLangId == beancount"
+				},
+				{
+					"command": "aaronsbeancountutils.doctor",
 					"when": "editorLangId == beancount"
 				}
 			]

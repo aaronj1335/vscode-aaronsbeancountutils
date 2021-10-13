@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+## [1.1.0]
+
+- Added `bean-doctor context` action.
+
 ## [1.0.0]
 
 - "Calculate line and copy result" command only shows up in beancount files.

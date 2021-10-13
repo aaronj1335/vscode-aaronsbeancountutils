@@ -2,7 +2,7 @@
 
 Utilities for balancing a Beancount ledger:
 
-- Calculate line and copy result: given a line like:
+- An action to calculate line and copy result. Given a line like:
 
         ; 100 * 30
 
@@ -12,7 +12,11 @@ Utilities for balancing a Beancount ledger:
 
     It will also copy the `3000` to the clipboard.
     
-    It is smart enough to ignore the leading comment.
+    It is smart enough to ignore the leading comment, and understand postings with prices:
+
+        Assets:Vanguard:VTSAX 100 VTSAX {110 USD} ; 11000
+
+- An action to open a new tab with the `bean-doctor context` of the current transaction under the cursor.
 
 ## Developing
 
