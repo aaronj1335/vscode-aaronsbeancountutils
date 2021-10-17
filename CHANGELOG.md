@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+## [1.1.1]
+
+- Fix activation bug.
+
 ## [1.1.0]
 
 - Added `bean-doctor context` action.
