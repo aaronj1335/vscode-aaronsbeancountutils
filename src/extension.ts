@@ -12,10 +12,13 @@ import {
 import calculator = require('./calculator');
 import { exec } from 'child_process';
 
-const POSTING = /^\s+[\w:]+\s+([0-9.-]+)\s+\w+\s+\{([0-9.-]+)/
+const POSTING = /^\s+[\w:]+\s+([0-9.-]+)\s+\w+\s+\{([0-9.-]+)/;
 
 export function calculate(line: string): [Decimal, string] {
-  const match = POSTING.exec(line)
+  // First strip off the existing calculation in case we're re-calculating.
+  line = line.replace(/\s*;?\s*=\s*[-\d.]+$/, '');
+
+  const match = POSTING.exec(line);
   let result: Decimal;
   if (match) {
     const [_, amount, cost, ...rest] = match;
@@ -58,11 +61,7 @@ class BeanDoctorOutput implements TextDocumentContentProvider {
     const file = search.get('file');
     if (num == null || file == null)
       return Promise.reject('line and file must not be null');
-    try {
-      return await run(`bean-doctor context ${file} ${num}`);
-    } catch (e) {
-      return Promise.reject(new Error(''));
-    }
+    return await run(`bean-doctor context ${file} ${num}`);
   }
 }
 

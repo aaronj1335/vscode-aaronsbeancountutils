@@ -11,10 +11,10 @@ Utilities for balancing a Beancount ledger:
         ; 100 * 30 = 3000
 
     It will also copy the `3000` to the clipboard.
-    
-    It is smart enough to ignore the leading comment, and understand postings with prices:
 
-        Assets:Vanguard:VTSAX 100 VTSAX {110 USD} ; 11000
+    It is smart enough to ignore the leading comment, re-calculate if the result is already there, and understand postings with prices:
+
+        Assets:Vanguard:VTSAX 100 VTSAX {110 USD} ; = 11000
 
 - An action to open a new tab with the `bean-doctor context` of the current transaction under the cursor.
 

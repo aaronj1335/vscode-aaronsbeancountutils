@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+## [1.1.2]
+
+- Correctly handle re-calculating lines that already have a result.
+
 ## [1.1.1]
 
 - Fix activation bug.
