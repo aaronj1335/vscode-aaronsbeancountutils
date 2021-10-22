@@ -2,8 +2,14 @@ import Decimal from "decimal.js";
 import {
   CancellationToken,
   commands,
+  DocumentSymbol,
+  DocumentSymbolProvider,
   env,
   ExtensionContext,
+  languages,
+  ProviderResult,
+  SymbolInformation,
+  TextDocument,
   TextDocumentContentProvider,
   Uri,
   window,
@@ -11,6 +17,9 @@ import {
 } from "vscode";
 import calculator = require('./calculator');
 import { exec } from 'child_process';
+import { SymbolKind } from "vscode";
+import { Position } from "vscode";
+import { Range } from "vscode";
 
 const POSTING = /^\s+[\w:]+\s+([0-9.-]+)\s+\w+\s+\{([0-9.-]+)/;
 
@@ -80,6 +89,39 @@ export async function getBeanDoctorContext() {
   await window.showTextDocument(doc, {preview: false});
 }
 
+class SymbolProvider implements DocumentSymbolProvider {
+  async provideDocumentSymbols(document: TextDocument, _: CancellationToken): Promise<DocumentSymbol[]> {
+    console.log(`in there`);
+    const result: DocumentSymbol[] = [];
+    let end: [number, number] = [
+      document.lineCount - 1,
+      document.lineAt(document.lineCount - 1).text.length - 1,
+    ];
+    for (let i = document.lineCount - 1; i >= 0; i--) {
+      const line = document.lineAt(i);
+      if (line.text[0] === '*') {
+        const name = line.text.replace(/^\*+ /, '').trim();
+        try {
+          result.push(new DocumentSymbol(
+            name,
+            '',
+            SymbolKind.Namespace,
+            line.range,
+            new Range(
+              new Position(line.range.start.line, line.text.length - name.length),
+              new Position(...end))));
+        } catch (e) {
+          console.error(e);
+        }
+      }
+    }
+    console.log(`returning symbols for ${document.fileName} (${result.length})`);
+
+    return Promise.resolve(result.reverse());
+  }
+
+}
+
 export function activate(context: ExtensionContext) {
   context.subscriptions
     .push(commands.registerCommand('aaronsbeancountutils.calc', calcAndCopy));
@@ -89,6 +131,9 @@ export function activate(context: ExtensionContext) {
 
   context.subscriptions
     .push(workspace.registerTextDocumentContentProvider(BEAN_DOCTOR_SCHEME, new BeanDoctorOutput()));
+  
+  context.subscriptions
+    .push(languages.registerDocumentSymbolProvider('beancount', new SymbolProvider(), {label: 'Sections'}));
 }
 
 // this method is called when your extension is deactivated
