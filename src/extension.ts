@@ -2,8 +2,15 @@ import Decimal from "decimal.js";
 import {
   CancellationToken,
   commands,
+  DocumentSymbol,
+  DocumentSymbolProvider,
   env,
   ExtensionContext,
+  languages,
+  Location,
+  ProviderResult,
+  SymbolInformation,
+  TextDocument,
   TextDocumentContentProvider,
   Uri,
   window,
@@ -11,6 +18,9 @@ import {
 } from "vscode";
 import calculator = require('./calculator');
 import { exec } from 'child_process';
+import { SymbolKind } from "vscode";
+import { Position } from "vscode";
+import { Range } from "vscode";
 
 const POSTING = /^\s+[\w:]+\s+([0-9.-]+)\s+\w+\s+\{([0-9.-]+)/;
 
@@ -80,6 +90,72 @@ export async function getBeanDoctorContext() {
   await window.showTextDocument(doc, {preview: false});
 }
 
+function levelFromLine(text: string): number {
+  let level = -1;
+  while (text[++level] === '*');
+  return level;
+}
+
+function last<T>(array: T[]): T | undefined {
+  return array[array.length - 1];
+}
+
+class HierarchicalDocumentSymbol extends DocumentSymbol {
+  level: number;
+
+  constructor(name: string, range: Range, selectionRange: Range, level: number) {
+    super(name, '', SymbolKind.Namespace, range, selectionRange);
+    this.level = level;
+  }
+}
+
+class SymbolProvider implements DocumentSymbolProvider {
+  async provideDocumentSymbols(document: TextDocument, _: CancellationToken): Promise<DocumentSymbol[]> {
+    const lastLine = document.lineAt(document.lineCount - 1);
+    const start = new Position(0, 0);
+    const end = new Position(lastLine.lineNumber, lastLine.text.length);
+    const root = new HierarchicalDocumentSymbol('root', new Range(start, end), new Range(start, start), 0);
+    let stack: HierarchicalDocumentSymbol[] = [root];
+
+    for (let i = 0; i < document.lineCount; i++) {
+      const line = document.lineAt(i);
+      const level = levelFromLine(line.text);
+
+      if (level > 0) {
+        const name = line.text.replace(/^\*+ /, '').trim();
+
+        // Pop everything off the stack that's lower in the hierarchy.
+        stack = stack.filter(i => {
+          const shouldKeep = i.level < level;
+
+          // If it's getting popped, reset its end to the current position.
+          if (!shouldKeep) {
+            const previousNumber = line.range.start.line - 1;
+            i.range = new Range(
+              i.range.start,
+              new Position(
+                previousNumber,
+                document.lineAt(previousNumber).text.length));
+          }
+          return shouldKeep;
+        });
+
+        const newSymbol = new HierarchicalDocumentSymbol(
+          name,
+          new Range(line.range.start, end),
+          new Range(
+            new Position(line.range.start.line, line.text.length - name.length),
+            new Position(line.range.start.line, line.text.length)),
+          level);
+        last(stack)?.children.push(newSymbol);
+        stack.push(newSymbol);
+      }
+    }
+
+    return root.children;
+  }
+}
+
 export function activate(context: ExtensionContext) {
   context.subscriptions
     .push(commands.registerCommand('aaronsbeancountutils.calc', calcAndCopy));
@@ -89,6 +165,9 @@ export function activate(context: ExtensionContext) {
 
   context.subscriptions
     .push(workspace.registerTextDocumentContentProvider(BEAN_DOCTOR_SCHEME, new BeanDoctorOutput()));
+
+  context.subscriptions
+    .push(languages.registerDocumentSymbolProvider('beancount', new SymbolProvider(), {label: 'Sections'}));
 }
 
 // this method is called when your extension is deactivated

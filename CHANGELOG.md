@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+## [1.2.0]
+
+- Add an outline in the Explorer view.
+
 ## [1.1.2]
 
 - Correctly handle re-calculating lines that already have a result.

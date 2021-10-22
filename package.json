@@ -2,7 +2,7 @@
 	"name": "aaronsbeancountutils",
 	"displayName": "AaronsBeancountUtils",
 	"description": "Utilities for Beancount (i.e. inline calculator)",
-	"version": "1.1.2",
+	"version": "1.2.0",
 	"repository": {
 		"type": "git",
 		"url": "https://github.com/aaronj1335/vscode-aaronsbeancountutils.git"
@@ -13,8 +13,7 @@
 	"main": "./out/extension.js",
 	"publisher": "aaronj1335",
 	"activationEvents": [
-		"onCommand:aaronsbeancountutils.calc",
-		"onCommand:aaronsbeancountutils.doctor"
+		"onLanguage:beancount"
 	],
 	"contributes": {
 		"commands": [
