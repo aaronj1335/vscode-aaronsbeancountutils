@@ -90,6 +90,25 @@ export async function getBeanDoctorContext() {
   await window.showTextDocument(doc, {preview: false});
 }
 
+function levelFromLine(text: string): number {
+  let level = -1;
+  while (text[++level] === '*');
+  return level;
+}
+
+function last<T>(array: T[]): T | undefined {
+  return array[array.length - 1];
+}
+
+class HierarchicalDocumentSymbol extends DocumentSymbol {
+  level: number;
+
+  constructor(name: string, range: Range, selectionRange: Range, level: number) {
+    super(name, '', SymbolKind.Namespace, range, selectionRange);
+    this.level = level;
+  }
+}
+
 class SymbolProvider implements DocumentSymbolProvider {
   // async provideDocumentSymbols(document: TextDocument, _: CancellationToken): Promise<SymbolInformation[]> {
   //   let stack : [SymbolInformation, number][] = [];
@@ -115,45 +134,87 @@ class SymbolProvider implements DocumentSymbolProvider {
   // }
 
   async provideDocumentSymbols(document: TextDocument, _: CancellationToken): Promise<DocumentSymbol[]> {
-    const result: DocumentSymbol[] = [];
-    let ends: [number, number][] = [[
-      document.lineCount - 1,
-      document.lineAt(document.lineCount - 1).text.length,
-    ]];
-    for (let i = document.lineCount - 1; i >= 0; i--) {
-      const line = document.lineAt(i);
-      let level = -1;
-      while (line.text[++level] === '*');
-      if (level > 0) {
-        const name = line.text.replace(/^\*+ /, '').trim();
-        const end: [number, number] = ends.slice(0, level + 1).reverse().find(end => end != null) ?? ends[0];
-        try {
-          result.push(new DocumentSymbol(
+    let stack: HierarchicalDocumentSymbol[] = [];
+    const tokenData: HierarchicalDocumentSymbol[] = [];
+    const lastPosition = new Position(document.lineCount - 1, document.lineAt(document.lineCount - 1).text.length);
+    try {
+      for (let i = 0; i < document.lineCount; i++) {
+        const line = document.lineAt(i);
+        const level = levelFromLine(line.text);
+        if (level > 0) {
+          const name = line.text.replace(/^\*+ /, '').trim();
+          stack = stack.filter(i => {
+            const shouldRemove = i.level > level;
+            if (shouldRemove) {
+              const previousNumber = line.range.start.line - 1;
+              i.range = new Range(
+                i.range.start,
+                new Position(
+                  previousNumber,
+                  document.lineAt(previousNumber).text.length));
+            }
+            return shouldRemove;
+          });
+          const newSymbol = new HierarchicalDocumentSymbol(
             name,
-            '',
-            SymbolKind.Namespace,
             new Range(
-              line.range.start,
-              new Position(...end)),
+                line.range.start,
+                lastPosition),
             new Range(
               new Position(line.range.start.line, line.text.length - name.length),
-              new Position(line.range.start.line, line.text.length - 1))
-            ));
-        } catch (e) {
-          console.error(e);
-        }
-
-        if (i > 0) {
-          const next = document.lineAt(i - 1);
-          ends[level] = [next.lineNumber, next.text.length];
-          ends = ends.slice(0, level + 1);
+              new Position(line.range.start.line, line.text.length - 1)),
+            level);
+          tokenData.push(newSymbol);
+          stack.push(newSymbol);
+          // last(stack)?.children.push(newSymbol);
         }
       }
+    } catch (e) {
+      console.error(e);
     }
-    console.log(`returning symbols for ${document.fileName} (${result.length})`);
-
-    return Promise.resolve(result.reverse());
+    return tokenData;
   }
+
+  // async provideDocumentSymbols(document: TextDocument, _: CancellationToken): Promise<DocumentSymbol[]> {
+  //   const result: DocumentSymbol[] = [];
+  //   let ends: [number, number][] = [[
+  //     document.lineCount - 1,
+  //     document.lineAt(document.lineCount - 1).text.length,
+  //   ]];
+  //   for (let i = document.lineCount - 1; i >= 0; i--) {
+  //     const line = document.lineAt(i);
+  //     let level = -1;
+  //     while (line.text[++level] === '*');
+  //     if (level > 0) {
+  //       const name = line.text.replace(/^\*+ /, '').trim();
+  //       const end: [number, number] = ends.slice(0, level + 1).reverse().find(end => end != null) ?? ends[0];
+  //       try {
+  //         result.push(new DocumentSymbol(
+  //           name,
+  //           '',
+  //           SymbolKind.Namespace,
+  //           new Range(
+  //             line.range.start,
+  //             new Position(...end)),
+  //           new Range(
+  //             new Position(line.range.start.line, line.text.length - name.length),
+  //             new Position(line.range.start.line, line.text.length - 1))
+  //           ));
+  //       } catch (e) {
+  //         console.error(e);
+  //       }
+
+  //       if (i > 0) {
+  //         const next = document.lineAt(i - 1);
+  //         ends[level] = [next.lineNumber, next.text.length];
+  //         ends = ends.slice(0, level + 1);
+  //       }
+  //     }
+  //   }
+  //   console.log(`returning symbols for ${document.fileName} (${result.length})`);
+
+  //   return Promise.resolve(result.reverse());
+  // }
 
 }
 
