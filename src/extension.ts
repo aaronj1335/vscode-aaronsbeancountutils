@@ -7,6 +7,7 @@ import {
   env,
   ExtensionContext,
   languages,
+  Location,
   ProviderResult,
   SymbolInformation,
   TextDocument,
@@ -90,28 +91,62 @@ export async function getBeanDoctorContext() {
 }
 
 class SymbolProvider implements DocumentSymbolProvider {
+  // async provideDocumentSymbols(document: TextDocument, _: CancellationToken): Promise<SymbolInformation[]> {
+  //   let stack : [SymbolInformation, number][] = [];
+  //   const result: SymbolInformation[] = [];
+  //   for (let i = 0; i < document.lineCount; i++) {
+  //     const line = document.lineAt(i);
+  //     let level = -1;
+  //     while (line.text[++level] === '*');
+  //     if (level > 0) {
+  //       const name = line.text.replace(/^\*+ /, '').trim();
+  //       while (stack.length && stack[stack.length - 1][1] >= level) stack.pop();
+  //       const container = stack[stack.length - 1];
+  //       result.push(new SymbolInformation(
+  //         name,
+  //         SymbolKind.Namespace,
+  //         container != null? container[0].name : '',
+  //         new Location(document.uri, line.range.start)
+  //       ));
+  //       stack.push([result[result.length - 1], level]);
+  //     }
+  //   }
+  //   return result;
+  // }
+
   async provideDocumentSymbols(document: TextDocument, _: CancellationToken): Promise<DocumentSymbol[]> {
-    console.log(`in there`);
     const result: DocumentSymbol[] = [];
-    let end: [number, number] = [
+    let ends: [number, number][] = [[
       document.lineCount - 1,
-      document.lineAt(document.lineCount - 1).text.length - 1,
-    ];
+      document.lineAt(document.lineCount - 1).text.length,
+    ]];
     for (let i = document.lineCount - 1; i >= 0; i--) {
       const line = document.lineAt(i);
-      if (line.text[0] === '*') {
+      let level = -1;
+      while (line.text[++level] === '*');
+      if (level > 0) {
         const name = line.text.replace(/^\*+ /, '').trim();
+        const end: [number, number] = ends.slice(0, level + 1).reverse().find(end => end != null) ?? ends[0];
         try {
           result.push(new DocumentSymbol(
             name,
             '',
             SymbolKind.Namespace,
-            line.range,
+            new Range(
+              line.range.start,
+              new Position(...end)),
             new Range(
               new Position(line.range.start.line, line.text.length - name.length),
-              new Position(...end))));
+              new Position(line.range.start.line, line.text.length - 1))
+            ));
         } catch (e) {
           console.error(e);
+        }
+
+        if (i > 0) {
+          const next = document.lineAt(i - 1);
+          ends[level] = [next.lineNumber, next.text.length];
+          ends = ends.slice(0, level + 1);
         }
       }
     }
@@ -131,7 +166,7 @@ export function activate(context: ExtensionContext) {
 
   context.subscriptions
     .push(workspace.registerTextDocumentContentProvider(BEAN_DOCTOR_SCHEME, new BeanDoctorOutput()));
-  
+
   context.subscriptions
     .push(languages.registerDocumentSymbolProvider('beancount', new SymbolProvider(), {label: 'Sections'}));
 }

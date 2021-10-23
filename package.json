@@ -13,8 +13,7 @@
 	"main": "./out/extension.js",
 	"publisher": "aaronj1335",
 	"activationEvents": [
-		"onCommand:aaronsbeancountutils.calc",
-		"onCommand:aaronsbeancountutils.doctor"
+		"onLanguage:beancount"
 	],
 	"contributes": {
 		"commands": [
