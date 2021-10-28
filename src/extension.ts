@@ -100,11 +100,17 @@ function last<T>(array: T[]): T | undefined {
   return array[array.length - 1];
 }
 
+function symbolKind(name: string, level: number): SymbolKind {
+  if (/statement/i.test(name)) return SymbolKind.Constant;
+  if (level <= 1) return SymbolKind.Class;
+  return SymbolKind.Function;
+}
+
 class HierarchicalDocumentSymbol extends DocumentSymbol {
   level: number;
 
   constructor(name: string, range: Range, selectionRange: Range, level: number) {
-    super(name, '', SymbolKind.Namespace, range, selectionRange);
+    super(name, '', symbolKind(name, level), range, selectionRange);
     this.level = level;
   }
 }
@@ -161,10 +167,10 @@ export function activate(context: ExtensionContext) {
     .push(commands.registerCommand('aaronsbeancountutils.calc', calcAndCopy));
 
   context.subscriptions
-    .push(commands.registerCommand('aaronsbeancountutils.doctor', getBeanDoctorContext));
+    .push(workspace.registerTextDocumentContentProvider(BEAN_DOCTOR_SCHEME, new BeanDoctorOutput()));
 
   context.subscriptions
-    .push(workspace.registerTextDocumentContentProvider(BEAN_DOCTOR_SCHEME, new BeanDoctorOutput()));
+    .push(commands.registerCommand('aaronsbeancountutils.doctor', getBeanDoctorContext));
 
   context.subscriptions
     .push(languages.registerDocumentSymbolProvider('beancount', new SymbolProvider(), {label: 'Sections'}));

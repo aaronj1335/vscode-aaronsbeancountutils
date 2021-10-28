@@ -2,6 +2,14 @@
 
 ## [Unreleased]
 
+## [1.3.1]
+
+- Doc updates.
+
+## [1.3.0]
+
+- Set different symbol types in symbol provider. Allows filtering certain headers from explorer outline view.
+
 ## [1.2.0]
 
 - Add an outline in the Explorer view.

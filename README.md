@@ -2,6 +2,8 @@
 
 Utilities for balancing a Beancount ledger:
 
+![Screencast of plugin capabilities](screencast.gif)
+
 - An outline based on [lines starting with asterisks (i.e. org-mode headers)](https://beancount.github.io/docs/beancount_language_syntax.html#comments) that shows up in [the "Explorer" view](https://code.visualstudio.com/docs/getstarted/userinterface#_outline-view). The outline comes from a [`DocumentSymbolProvider`](https://code.visualstudio.com/api/references/vscode-api#DocumentSymbolProvider), so ["Breadcrumbs"](https://code.visualstudio.com/docs/getstarted/userinterface#_outline-view) work, and ["Go to symbol"](https://code.visualstudio.com/docs/getstarted/userinterface#_outline-view). This makes it easy to jump quickly to, i.e. a specific account/section.
 
 - An action to calculate line and copy result. Given a line like:
